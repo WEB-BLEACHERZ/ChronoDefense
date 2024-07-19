@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 import random
 import socket
 import geocoder
+import openpyxl
+from openpyxl.styles import PatternFill
 
 # Get system IP address and location
 def get_system_info():
@@ -23,9 +25,9 @@ def generate_data(num_records=1000):
     random.seed(42)
     
     ip_address, location, region = get_system_info()
-    attack_types = ['DDoS', 'Phishing', 'Malware', 'Ransomware']
+    attack_types = ['DDoS', 'Phishing', 'Malware', 'Ransomware','Cloud-based-attacks','Data-center-attacks','Passwaord attacks','web attacks','Trojan horses']
     ports = [80, 443, 21, 22, 25, 8080]
-    protocols = ['TCP', 'UDP', 'ICMP']
+    protocols = ['TCP', 'UDP', 'ICMP','HTTP','FTP','SMTP','IP']
     
     data = []
     
@@ -127,6 +129,36 @@ future_threats_with_measures.to_csv('cyber_threats_report.csv', index=False)
 
 # Display future threat message with attack type
 future_attack_type = future_threats['PredictedAttackType'].mode()[0]
-print(f"Predicted future attack type: {future_attack_type}")
 
-print("Cyber threats report generated successfully.")
+
+# Save reports with formatting
+def save_report_with_formatting(df, filename):
+    df.to_excel(filename, index=False)
+    
+    wb = openpyxl.load_workbook(filename)
+    ws = wb.active
+    
+    # Define fill colors for conditional formatting
+    green_fill = PatternFill(start_color="00FF00", end_color="00FF00", fill_type="solid")
+    yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+    red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+    
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=23):  # Extend the color to the first 23 columns
+        severity_score = row[0].value  # Assuming SeverityScore is the first column
+        if severity_score is not None:
+            if severity_score < 40:
+                fill = green_fill
+            elif severity_score < 70:
+                fill = yellow_fill
+            else:
+                fill = red_fill
+            for cell in row:
+                cell.fill = fill  # Apply the fill to the first 23 columns of the row
+    
+    wb.save(filename)
+
+save_report_with_formatting(future_threats_with_measures, 'predicted_future_threats_report.xlsx')
+save_report_with_formatting(future_threats_with_measures, 'cyber_threats_report_file.xlsx')
+save_report_with_formatting(future_threats_with_measures, 'historical_cyber_attacks.xlsx')
+print ("Reports Generated Successfully ")
+
