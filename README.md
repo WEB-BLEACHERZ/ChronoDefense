@@ -70,7 +70,7 @@ To develop a predictive model that forecasts future cyber threats based on histo
 
 1. Clone the repository:
    ```bash
-  git@github.com:WEB-BLEACHERZ/ChronoDefense.git
+  git clone git@github.com:WEB-BLEACHERZ/ChronoDefense.git
    ```
 2.Run the executable file on your windows
 
